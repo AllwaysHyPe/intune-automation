@@ -1,0 +1,56 @@
+name: Deploy Intune Configurations
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Connect to Azure AD with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: 'system'
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run Pester Tests
+        shell: pwsh
+        run: |
+          Install-Module -Name Pester -Force -SkipPublisherCheck
+          Invoke-Pester -Path "./Tests"  # Run all tests in the Tests directory
+
+      - name: Deploy Intune Configurations
+        shell: pwsh
+        if: ${{ job.status == 'success' }}
+        run: |
+          # Import the IntuneHelpers module
+          Import-Module "./Scripts/Common/IntuneHelpers.psm1"
+
+          # Deploy configurations (example - adjust as needed)
+          try {
+            Write-Host "Deploying Configuration Profiles..."
+            Get-ChildItem "./Scripts/ConfigurationProfiles/*.ps1" | ForEach-Object {
+                . $_.FullName
+            }
+
+            Write-Host "Deploying Compliance Policies..."
+            Get-ChildItem "./Scripts/CompliancePolicies/*.ps1" | ForEach-Object {
+                 . $_.FullName
+            }
+
+             Write-Host "Deploying Applications..."
+            Get-ChildItem "./Scripts/Applications/*.ps1" | ForEach-Object {
+                 . $_.FullName
+            }
+          }
+          catch {
+            Write-Error "Deployment failed: $($_.Exception.Message)"
+            exit 1
+          }
