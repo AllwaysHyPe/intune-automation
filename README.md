@@ -20,6 +20,7 @@ This approach enables you to manage Intune at scale, reduce errors, and collabor
 
 ## Repository Structure
 
+```
 IntuneAutomation/
 ├── .github/                  # GitHub Actions workflows
 │   └── workflows/
@@ -46,6 +47,7 @@ IntuneAutomation/
 │   └── Common/
 │       └── IntuneHelpers.tests.ps1                 
 └── README.md       
+```
 
 ## Explanation of Key Directories and Files
 
