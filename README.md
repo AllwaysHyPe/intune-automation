@@ -44,8 +44,8 @@ IntuneAutomation/
 │   ├── Applications/
 │   │   └── Deploy-IntuneApp.tests.ps1
 │   └── Common/
-│       └── IntuneHelpers.tests.ps1
-└── README.md
+│       └── IntuneHelpers.tests.ps1                 
+└── README.md       
 
 ## Explanation of Key Directories and Files
 
